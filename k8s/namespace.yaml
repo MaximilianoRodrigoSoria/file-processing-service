@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: file-processing-service
+  labels:
+    app.kubernetes.io/name: file-processing-service
+    app.kubernetes.io/managed-by: kubectl

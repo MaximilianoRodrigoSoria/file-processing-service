@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'file-processing-service'
+    metrics_path: '/file-processing-service/actuator/prometheus'
+    static_configs:
+      - targets: ['fileprocessingservice-app:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'file-processing-service'
