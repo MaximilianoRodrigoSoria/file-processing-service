@@ -38,12 +38,15 @@ spring:
   # Deshabilitar autoconfiguraciones de Redis
   autoconfigure:
     exclude:
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
       - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
       - org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
 
 # Configuración de aplicación para tests
 app:
+  kafka:
+    enabled: false
   cache:
     enabled: false
   cors:

@@ -43,9 +43,13 @@ Java 21 · Apache Kafka · MinIO · PostgreSQL · Docker · Gradle · Flyway · 
 
 Organizado por **feature** en capas `domain -> application -> infrastructure`, con la regla de dependencia verificada por ArchUnit. La logica de negocio (dominio y casos de uso) no depende de framework ni de infraestructura; los adaptadores (web, persistencia, mensajeria) implementan puertos definidos por la aplicacion.
 
+## API
+
+Contexto `/file-processing-service`. `POST /api/v1/files` ingesta un archivo y publica un evento en **Kafka**; el consumer lo procesa en segundo plano; `GET /api/v1/tasks/{id}` da el estado.
+
 ## Estado
 
-🚧 En planificacion / arranque. El diseno detallado (epicas, historias y criterios de aceptacion) vive en el plan del portafolio.
+✅ Nucleo funcional implementado: ingesta de archivos, publicacion de evento en **Kafka** (producer), consumer que procesa en background, procesamiento idempotente, notificacion al completar y estados de la tarea. Persistencia JPA/PostgreSQL + migracion Flyway, tests (unit + Testcontainers; en tests Kafka esta desactivado y el procesamiento se dispara a mano). Kafka es opcional por `app.kafka.enabled`; con un fallback no-op para dev/test. Capa siguiente: S3/MinIO real, retry topic + DLQ, y notificacion en tiempo real.
 
 ---
 

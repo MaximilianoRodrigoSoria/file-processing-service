@@ -2,6 +2,18 @@
 spring:
   application:
     name: file-processing-service
+
+  # Kafka
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: file-processing
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   
   # Profile activo por defecto
   profiles:
@@ -124,6 +136,12 @@ logging:
 
 # Configuración de aplicación
 app:
+  # Pipeline Kafka
+  kafka:
+    enabled: true
+    topic: file.uploaded
+    group-id: file-processing
+
   # Habilitar/deshabilitar caché con Redis
   # Valores: true (habilita caché) / false (deshabilita caché)
   cache:
@@ -183,4 +201,9 @@ resilience4j:
         # Tiempo máximo que un hilo espera para obtener un permiso antes de recibir 429
         timeout-duration: 0s
         # Registrar métricas en Actuator
+        register-health-indicator: true
+      processing-api:
+        limit-for-period: 50
+        limit-refresh-period: 1s
+        timeout-duration: 0s
         register-health-indicator: true

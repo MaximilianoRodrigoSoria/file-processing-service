@@ -4,6 +4,7 @@ import com.ar.laboratory.fileprocessingservice.example.domain.exception.ExampleA
 import com.ar.laboratory.fileprocessingservice.example.domain.exception.ExampleNotFoundException;
 import com.ar.laboratory.fileprocessingservice.shared.infrastructure.exception.BadRequestException;
 import com.ar.laboratory.fileprocessingservice.shared.infrastructure.exception.InfrastructureException;
+import com.ar.laboratory.fileprocessingservice.processing.domain.exception.TaskNotFoundException;
 import com.ar.laboratory.fileprocessingservice.shared.infrastructure.logging.MdcFilter;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import java.time.LocalDateTime;
@@ -80,6 +81,12 @@ public class GlobalExceptionHandler {
                         .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTaskNotFound(
+            TaskNotFoundException ex, WebRequest request) {
+        return build(HttpStatus.NOT_FOUND, ex.getMessage(), request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -168,6 +175,20 @@ public class GlobalExceptionHandler {
                         .build();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
+    private ResponseEntity<ErrorResponse> build(
+            HttpStatus status, String message, WebRequest request) {
+        return ResponseEntity.status(status)
+                .body(
+                        ErrorResponse.builder()
+                                .timestamp(LocalDateTime.now())
+                                .status(status.value())
+                                .error(status.getReasonPhrase())
+                                .message(message)
+                                .path(getPath(request))
+                                .traceId(generateTraceId())
+                                .build());
     }
 
     private String getPath(WebRequest request) {
